@@ -43,7 +43,7 @@ public class Server
 
                         for (int j = 0; j < 8; j++)
                         {
-                            array[i] = (byte) in.read();
+                            array[j] = (byte) in.read();
                         }
 
                         double dubNumber = ByteBuffer.wrap(array).getDouble();
@@ -52,9 +52,7 @@ public class Server
                     }
 
                     double first = numbers[0];
-                    System.out.println(first + "\n");
                     double second = numbers[1];
-                    System.out.println(second + "\n");
                     char operation = (char) in.read();
 
                     System.out.println("The operation type is: " + operation + "\n");
@@ -76,7 +74,6 @@ public class Server
                             result = Calculator.division(first, second);
                             break;
                         default:
-                            System.out.println(operation);
                             result = 0;
                             break;
                     };
