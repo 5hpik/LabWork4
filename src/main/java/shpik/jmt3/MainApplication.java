@@ -12,7 +12,7 @@ public class MainApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("app-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 320, 122);
         stage.setResizable(false);
-        stage.setTitle("Java Server Progressbar");
+        stage.setTitle("Java Progressbar Client");
         stage.setScene(scene);
         stage.show();
     }
