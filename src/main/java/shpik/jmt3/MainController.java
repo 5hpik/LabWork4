@@ -1,71 +1,70 @@
 package shpik.jmt3;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 
+import java.io.IOException;
+
+
 public class MainController {
-    @FXML
-    private Label label;
-    @FXML
-    private Button startButton;
-    @FXML
-    private Button pauseButton;
-    @FXML
-    private Button stopButton;
-    @FXML
-    private ProgressBar progressBar = new ProgressBar();
 
-    private boolean isThreadRunning = false;
-
-    private Thread thread;
-    @FXML
-    private void onStartButtonClick()
-    {
-        startButton.setText("Restart");
-        if (isThreadRunning)
-        {
-            Thread t1 = new Thread(new LoadThread(progressBar), "LoadThread");
-            t1.start();
-        }
-        else
-        {
-            Thread t = new Thread(new LoadThread(progressBar));
-            thread = t;
-            t.start();
-            isThreadRunning = true;
-        }
-    }
+    private IModel model;
 
     @FXML
-    private void onPauseButtonClick()
-    {
-        if (pauseButton.getText().equals("Pause"))
+    private Button PauseResume;
+
+    @FXML
+    private ProgressBar Pr;
+
+    @FXML
+    void PauseResume(ActionEvent event) {
+        if(PauseResume.getText().equals("Pause"))
         {
-            Thread t1 = new Thread(new LoadThread(progressBar), "LoadThread1");
-            t1.start();
-            pauseButton.setText("Continue");
-            startButton.setDisable(true);
+            model.pause();
+            PauseResume.setText("Resume");
         }
-        else
+        else if(PauseResume.getText().equals("Resume"))
         {
             synchronized (System.out)
             {
-                System.out.notifyAll();
+                System.out.notify();
             }
-
-            pauseButton.setText("Pause");
-            startButton.setDisable(false);
+            model.resume();
+            PauseResume.setText("Pause");
         }
+
     }
 
     @FXML
-    private void onStopButtonClick()
-    {
-        thread.interrupt();
-        progressBar.setProgress(0);
-        isThreadRunning = false;
-        startButton.setText("Start");
+    void Start(ActionEvent event) throws IOException {
+        model.some_calc(new Updatable() {
+            @Override
+            public void update(double value) {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        Pr.setProgress(value);
+                    }
+                });
+            }
+        });
     }
+
+    @FXML
+    void Stop(ActionEvent event) {
+        model.stop();
+        Pr.setProgress(0);
+        PauseResume.setText("Pause");
+
+    }
+
+    @FXML
+    void initialize() {
+        ModelFactory modelFactory = new ModelFactory();
+        model = modelFactory.createInstance();
+    }
+
 }
